@@ -6,6 +6,7 @@ import speech_recognition as sr
 from fuzzywuzzy import fuzz
 import pyttsx3
 import datetime
+import random
 
 # настройки
 # opts = {
@@ -24,23 +25,33 @@ pts = {"Привет":["Привет!", "Приветульки"],
        "Что ты умеешь?": ["Я пока что мало что знаю и умею, но если ты меня будешь обучать я стану умнее"]}
 new_question = input('Введи новый вопрос >>')
 new_answer = input('Введи ответ на вопрос(если их несколько то пишите между ними знак *) >>')
+searcher = input("Задайте вопрос?")
 
 
 def add(new_answer, new_question):
-    for h in range(len(pts)):
-        for i in list(pts):
-            if new_question in i:
-                print('Такой вопрос есть, введи другой')
-            elif new_question not in i and '*' not in new_answer:
-                pts.update({new_question : new_answer})
-            else:
-                new_answer_split = new_answer.split("*")
-                pts.update({new_question : new_answer_split})
-
+    if new_question in list(pts):
+        print('Такой вопрос есть, введи другой')
+    elif new_question not in list(pts) and '*' not in new_answer:
+        pts.update({new_question : new_answer})
+    else:
+        new_answer_split = new_answer.split("*")
+        pts.update({new_question : new_answer_split})
     print(pts)
 
 
+def search(searcher):
+    a = 0
+    for i in list(pts):
+        if new_question in i:
+            print(random.choice(pts[i]))
+            a += 1
+    if a == 0:
+        print('Вы меня не обучили как отвечать на такой вопрос')
+
+
+
 add(new_answer, new_question)
+search(searcher)
 
 
 def speak(what):
