@@ -17,21 +17,32 @@ import datetime
 #         "radio": ('включи музыку', 'воспроизведи радио', 'включи радио'),
 #         "stupid1": ('расскажи анекдот', 'рассмеши меня', 'ты знаешь анекдоты')
 #     }
-# }
-ggep = input('j')
 pts = {"Привет":["Привет!", "Приветульки"],
        "Как дела?":["Нормально", "Отлично", "Плохо"],
        "Почему?":["Сам не знаю", "Просто настроения нету"],
        "Кто твои родители?": ["По сути у меня нету родителей, но у меня есть создатели, Артур и Степа!"],
        "Что ты умеешь?": ["Я пока что мало что знаю и умею, но если ты меня будешь обучать я стану умнее"]}
-for i in pts:
-    print(i)
-pts.update({f'{ggep}': 'asd'})
-print(pts)
+new_question = input('Введи новый вопрос >>')
+new_answer = input('Введи ответ на вопрос(если их несколько то пишите между ними знак *) >>')
 
 
+def add(new_answer, new_question):
+    for h in range(len(pts)):
+        for i in list(pts):
+            if new_question in i:
+                print('Такой вопрос есть, введи другой')
+            elif new_question not in i and '*' not in new_answer:
+                pts.update({new_question : new_answer})
+            else:
+                new_answer_split = new_answer.split("*")
+                pts.update({new_question : new_answer_split})
 
-# функции
+    print(pts)
+
+
+add(new_answer, new_question)
+
+
 def speak(what):
     print(what)
     speak_engine.say(what)
