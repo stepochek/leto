@@ -18,14 +18,24 @@ import random
 #         "radio": ('включи музыку', 'воспроизведи радио', 'включи радио'),
 #         "stupid1": ('расскажи анекдот', 'рассмеши меня', 'ты знаешь анекдоты')
 #     }
-pts = {"Привет":["Привет!", "Приветульки"],
-       "Как дела?":["Нормально", "Отлично", "Плохо"],
-       "Почему?":["Сам не знаю", "Просто настроения нету"],
-       "Кто твои родители?": ["По сути у меня нету родителей, но у меня есть создатели, Артур и Степа!"],
-       "Что ты умеешь?": ["Я пока что мало что знаю и умею, но если ты меня будешь обучать я стану умнее"]}
-new_question = input('Введи новый вопрос >>')
-new_answer = input('Введи ответ на вопрос(если их несколько то пишите между ними знак *) >>')
-searcher = input("Задайте вопрос?")
+
+r = sr.Recognizer()
+m = sr.Microphone(device_index=1)
+speak_engine = pyttsx3.init()
+
+
+pts = {"привет":["Привет!", "Приветульки"],
+       "как дела":["Нормально", "Отлично", "Плохо"],
+       "почему":["Сам не знаю", "Просто настроения нету"],
+       "кто твои родители": ["По сути у меня нету родителей, но у меня есть создатели, Артур и Степа!"],
+       "что ты умеешь": ["Я пока что мало что знаю и умею, но если ты меня будешь обучать я стану умнее"]}
+
+main = speak_engine.getProperty('voices')
+
+# new_question = input('Введи новый вопрос >>')
+# new_answer = input('Введи ответ на вопрос(если их несколько то пишите между ними знак *) >>')
+# searcher = input("Задайте вопрос?")
+# del_key = input("Хотите ли вы удалить вопрос(напишите вопрос который хотите удалить)")
 
 
 def add(new_answer, new_question):
@@ -39,19 +49,22 @@ def add(new_answer, new_question):
     print(pts)
 
 
-def search(searcher):
+def search(lol, pts):
     a = 0
     for i in list(pts):
-        if new_question in i:
-            print(random.choice(pts[i]))
+        if lol in i:
+            speak(random.choice(pts[i]))
             a += 1
     if a == 0:
         print('Вы меня не обучили как отвечать на такой вопрос')
 
 
+def delate(del_key, pts):
+    del pts[del_key]
 
-add(new_answer, new_question)
-search(searcher)
+
+voices = speak_engine.getProperty('voices')
+speak_engine.setProperty('voice', voices[0].id)
 
 
 def speak(what):
@@ -62,12 +75,21 @@ def speak(what):
 
 
 def callback(recognizer, audio):
-    try:
-        voice = recognizer.recognize_google(audio, language="ru-RU").lower()
-        print("[log] Распознано: " + voice)
-        speak_engine.say(voice)
-        speak_engine.runAndWait()
-        speak_engine.stop()
+    voice = recognizer.recognize_google(audio, language="ru-RU").lower()
+    spis = voice.split(' кома ')
+    if spis[0] in list(pts):
+        search(spis[1], pts)
+    elif spis[0] == 'добавить':
+        add(spis[1], [spis[2]])
+        print(pts)
+    elif spis[0] == 'удалить':
+        delate(spis[1], pts)
+        print(pts)
+    print("[log] Распознано: " + voice)
+    speak_engine.say(voice)
+    speak_engine.runAndWait()
+    speak_engine.stop()
+
 
         # if voice.startswith(opts["alias"]):
         #     # обращаются к Кеше
@@ -83,13 +105,13 @@ def callback(recognizer, audio):
         #     cmd = recognize_cmd(cmd)
         #     execute_cmd(cmd['cmd'])
 
-    except sr.UnknownValueError:
-        print("[log] Голос не распознан!")
-        speak_engine.say('Голос не распознан')
-        speak_engine.runAndWait()
-        speak_engine.stop()
-    except sr.RequestError as e:
-        print("[log] Неизвестная ошибка, проверьте интернет!")
+    # except sr.UnknownValueError:
+    #     print("[log] Голос не распознан!")
+    #     speak_engine.say('Голос не распознан')
+    #     speak_engine.runAndWait()
+    #     speak_engine.stop()
+    # except sr.RequestError as e:
+    #     print("[log] Неизвестная ошибка, проверьте интернет!")
 
 
 # def recognize_cmd(cmd):
@@ -124,21 +146,17 @@ def callback(recognizer, audio):
 
 
 # запуск
-r = sr.Recognizer()
-m = sr.Microphone(device_index=1)
 
 # with m as source:
 #     r.adjust_for_ambient_noise(source)
 
-speak_engine = pyttsx3.init()
+# speak_engine = pyttsx3.init()
 
 # Только если у вас установлены голоса для синтеза речи!
-# voices = speak_engine.getProperty('voices')
-# speak_engine.setProperty('voice', voices[4].id)
 
 
-speak("Добрый день, повелитель")
-speak("Кеша слушает")
+# speak("Добрый день, повелитель")
+# speak("Кеша слушает")
 
 stop_listening = r.listen_in_background(m, callback)
 while True: time.sleep(0.1) # infinity loop
