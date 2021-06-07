@@ -157,7 +157,6 @@ def callback(recognizer, audio):
 #     else:
 #         print('Команда не распознана, повторите!')
 
-
 # with m as source:
 #     r.adjust_for_ambient_noise(source)
 
